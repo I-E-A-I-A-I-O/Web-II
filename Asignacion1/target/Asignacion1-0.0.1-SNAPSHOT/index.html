@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Asignacion1_WebII</title>
+    </head>
+    <body style="background-color: black;">
+        <p style="color:white">MINI FORM</p>
+        <form id="MyForm">
+            <label class="form-label" for="password" style="color: white;">Your_password:</label>
+            <input class="form-input" type="password" name="password" placeholder="Insert your password...">
+        </form>
+        <button id="MyButton" style="position: absolute;left: 270px; top: 50px">SendPassword</button>
+        <script>
+            var myForm = document.getElementById("MyForm");
+            var MyButton = document.getElementById("MyButton");
+            const sendRegister = (e) =>{
+                var form = new FormData(myForm);
+                fetch("http://localhost:8080/Asignacion1/MyServlet", {
+                    method:'POST',
+                    body:form
+                }).then(response => response.json()).then((response) =>{
+                    console.log(response);
+                    if (response.message.includes("Success")){
+                        alert("Password saved succesfully.");
+                    }
+                    else if (response.message.includes("Error")){
+                        alert("Password already registered.");
+                    }
+                })
+            }
+            MyButton.onclick = sendRegister;
+        </script>
+    </body>
+</html>
