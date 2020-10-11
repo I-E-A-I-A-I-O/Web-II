@@ -62,11 +62,8 @@ public class DBConnection {
 						return "PasswordError";
 					}
 				}
-				else {
-					return "UsernameError";
-				}
 			}
-			return "No data found.";
+			return "UsernameError";
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return e.toString();
