@@ -1,36 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Asignacion1_WebII</title>
+        <meta charset="UTF-8">
+        <title>Asignacion 2 Web-II</title>
     </head>
     <body style="background-color: black;">
-        <p style="color:white">MINI FORM</p>
-        <form id="MyForm">
-            <label class="form-label" for="password" style="color: white;">Your_password:</label>
-            <input class="form-input" type="password" name="password" placeholder="Insert your password...">
-        </form>
-        <button id="MyButton" style="position: absolute;left: 270px; top: 50px">SendPassword</button>
-        <script>
-            var myForm = document.getElementById("MyForm");
-            var MyButton = document.getElementById("MyButton");
-            const sendRegister = (e) =>{
-                var form = new FormData(myForm);
-                fetch("https://morning-oasis-65605.herokuapp.com/MyServlet", {
-                    method:'POST',
-                    body:form
-                }).then(response => response.json()).then((response) =>{
-                    console.log(response);
-                    if (response.message.includes("Success")){
-                        alert("Password saved succesfully.");
-                    }
-                    else if (response.message.includes("Error")){
-                        alert("Password already registered.");
-                    }
-                }).catch((error) => {
-                    console.log(error);
-                })
-            }
-            MyButton.onclick = sendRegister;
-        </script>
+        <p style="font-size: xx-large; color: aliceblue; position: absolute; left: 30%;"><strong>COOL LOOKING FRONT-END</strong></p>
+        <label for="registerButton" style="position: absolute; left: 28%; top: 25%; color: aquamarine;">Go to register page</label>
+        <button id="register" name="registerButton" style="position: absolute; top: 35%; left: 30%;">Register</button>
+        <label for="registerButton" style="position: absolute; left: 55%; top: 25%; color: aquamarine;">Go to login page</label>
+        <button id="login" name="loginButton" style="position: absolute; top: 35%; left: 57%;">Login</button>
     </body>
+    <script>
+        var registerButton = document.getElementById("register");
+        var loginButton = document.getElementById("login");
+        registerButton.onclick = () =>{
+            window.location.href = "https://morning-oasis-65605.herokuapp.com/html/register.html";
+        }
+        loginButton.onclick = () =>{
+            window.location.href = "https://morning-oasis-65605.herokuapp.com/html/login.html";
+        }
+    </script>
 </html>

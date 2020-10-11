@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Asignacion 2 Web-II</title>
+        <audio src="https://morning-oasis-65605.herokuapp.com/assets/audio/Hallelujah_chorus.mp3" autoplay></audio>
+    </head>
+    <body style="background-color: black;">
+        <p id="welcome" style="color: darksalmon; position: absolute; top: 25%; left: 35%; font-size: x-large;"><strong></strong></p>
+    </body>
+    <script>
+        fetch("https://morning-oasis-65605.herokuapp.com/SessionServlet",{
+            method:'GET',
+            credentials:'include',
+            headers: {
+                'SameSite':'None'
+            }
+        }).then(response => response.json())
+        .then((response) =>{
+            console.log(response);
+            if (response.message == "OK"){
+                var label = document.getElementById("welcome");
+                label.textContent = "Welcome " + response.username;
+            }
+            else{
+               
+            }
+        })
+    </script>
+</html>
