@@ -35,12 +35,17 @@ public class SessionServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		var session = request.getSession(true);
 		if (session.getId().equals(cookies[0].getValue())) {
-			toSend = String.format(toSend, "OK", session.getAttribute("username"), "200");
-			out.write(toSend);
+			if (session.getAttributeNames().hasMoreElements()) {
+				toSend = String.format(toSend, "OK", session.getAttribute("username"), "200");
+			}
+			else {
+				toSend = String.format(toSend, "ERROR", "null", "500");
+			}
 		}
 		else {
-			String.format(toSend, "ERROR", "null", "500");
+			toSend = String.format(toSend, "ERROR", "null", "500");
 		}
+		out.write(toSend);
 	}
 
 	/**

@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>Asignacion 2 Web-II</title>
-        <audio src="https://morning-oasis-65605.herokuapp.com/assets/audio/Hallelujah_chorus.mp3" autoplay></audio>
     </head>
     <body style="background-color: black;">
         <p id="welcome" style="color: darksalmon; position: absolute; top: 25%; left: 35%; font-size: x-large;"><strong></strong></p>
@@ -23,8 +22,10 @@
                 label.textContent = "Welcome " + response.username;
             }
             else{
-               
+               window.location.href = "https://morning-oasis-65605.herokuapp.com";
             }
+        }).catch((error) =>{
+            console.log(error);
         })
     </script>
 </html>
