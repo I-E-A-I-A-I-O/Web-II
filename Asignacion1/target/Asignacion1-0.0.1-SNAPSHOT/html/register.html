@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Asignacion 2 Web-II</title>
+    </head>
+    <body style="background-color: black;">
+        <p style="color:white; font-size: xx-large; position: absolute; left: 40%;"><strong>Register</strong></p>
+        <form id="MyForm" style="position: absolute; top: 40%; left: 30%;">
+            <label class="form-label" for="userName" style="color: white;">Username</label>
+            <input class="form-input" type="text" name="userName" placeholder="Insert your username..."><br><br>
+            <label class="form-label" for="password" style="color: white;">Password</label>
+            <input class="form-input" type="password" name="password" placeholder="Insert your password...">
+        </form>
+        <button id="MyButton" style="position: absolute;left: 48%; top: 43%">Register</button>
+        <script>
+            var myForm = document.getElementById("MyForm");
+            var MyButton = document.getElementById("MyButton");
+            function register(formData){
+                fetch("https://morning-oasis-65605.herokuapp.com/RegistrationServlet", {
+                    method:'POST',
+                    body:formData,
+                    credentials:'include'
+                }).then(response => response.json()).then((response) =>{
+                    console.log(response);
+                    if (response.message.includes("Success")){
+                        alert("User register succesfull.");
+                    }
+                    else if (response.message.includes("Error")){
+                        alert("User already registered.");
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+            MyButton.onclick = () =>{
+                var formData = new FormData(myForm)
+                if ((formData.get("password") == "") || (formData.get("userName") == "")){
+                    alert("Error: Username and/or password missing!");
+                }
+                else{
+                    register(formData);
+                }
+            }
+        </script>
+    </body>
+</html>

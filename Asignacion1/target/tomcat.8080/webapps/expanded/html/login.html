@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Asignacion 2 Web-II</title>
+    </head>
+    <body style="background-color: black;">
+        <p style="color:cadetblue; position: absolute; left: 40%; font-size: xx-large;"><strong>Login</strong></p>
+        <p id="ErrorMessage" style="color: red; font-size: large; position: absolute; left: 32%; top: 20%;"></p>
+        <form id="LoginForm" style="position: absolute; top: 30%; left: 32%;">
+            <label class="form-label" for="userName" style="color: aquamarine;">Username</label>
+            <input class="form-input" name="userName" type="text" placeholder="Insert your username..."><br><br>
+            <label class="form-label" for="password" style="color: aquamarine;">Password</label>
+            <input class="form-input" name="password" type="password" placeholder="Password...">
+        </form>
+        <button id="loginButton" style="position:absolute;left: 50%;top: 30%;">Login</button>
+        <script>
+            var form = document.getElementById("LoginForm");
+            var button = document.getElementById("loginButton");
+            var error = document.getElementById("ErrorMessage");
+            function login(formData){
+                fetch("https://morning-oasis-65605.herokuapp.com/LoginServlet", {
+                    method:'POST',
+                    body:formData,
+                    credentials:'include',
+                    headers: {
+                        'SameSite':'None'
+                    }
+                })
+                .then(response => response.json())
+                .then((response) => {
+                    console.log(response);
+                    if (response.message == "OK"){
+                        window.location.href = "https://morning-oasis-65605.herokuapp.com/html/" + response.redirectLocation + ".html";
+                    }
+                    else if (response.message == "PasswordError"){
+                        error.textContent = "Password doesn't match any records.";
+                    }
+                    else if (response.message == "UsernameError"){
+                        error.textContent = "Username doesn't match any records.";
+                    }
+                })
+            }
+            button.onclick = () =>{
+                if ((form.elements["userName"].value == "") || (form.elements["password"].value == "")){
+                    alert("Username and/or password missing.");
+                }
+                else{
+                    var formData = new FormData(form);
+                    login(formData);
+                }
+            }
+        </script>
+    </body>
+</html>
