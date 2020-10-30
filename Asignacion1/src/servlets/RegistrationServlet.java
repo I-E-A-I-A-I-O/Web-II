@@ -40,14 +40,20 @@ public class RegistrationServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept");
+		response.setHeader("Access-Control-Allow-Credentials", "true");
+		response.setHeader("Access-Control-Allow-Methods", "POST");
+		response.setHeader("Access-Control-Max-Age", "86400");
+		response.setHeader("Set-Cookie", "SameSite=None;Secure");
+		response.setContentType("application/json");
 		DBConnection db = new DBConnection();
 		db.Connect();
-		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		String toSend = "{\"message\":\"%s\", \"status\":200}";
 		toSend = String.format(toSend, db.InsertUser(request.getParameter("userName"), request.getParameter("password")));
-		out.write(toSend);
 		db.Disconnect();
+		out.write(toSend);
 	}
 
 }

@@ -18,6 +18,7 @@ public class Login {
 		else {
 			toSend = String.format(toSend, result, "null", "500");
 		}
+		db.Disconnect();
 		return toSend;
 	}
 }

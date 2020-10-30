@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Asignacion_webII</title>
+    </head>
+    <body style="background-color: rgb(34, 34, 34);">
+        <p id="welcome" style="color: darksalmon; position: absolute; top: 160px; left: 620px; font-size: x-large;"><strong></strong></p>
+        <p id="status" style="color: red; position: absolute; top: 80px; left: 500px; font-size: x-large;"><strong></strong></p>
+        <form id="fileForm" style="position: absolute; top: 320px; left: 420px;">
+            <label style="color: aliceblue;" for="file">Upload a video</label>
+            <input id="myFile" name="file" type="file" style="color: lime;"><br><br>
+            <button type="button" onclick="SendFile()">Send video</button>
+        </form>
+        <img id="profilePic" src="" height="100" width="100" style="position: absolute; left: 480px; top: 150px">
+        <button onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/welcome.html')">Main menu</button>
+        <div id="userVideosDiv" style="top: 150px; left: 860px; position: absolute; background-color: cornflowerblue; border: 8px outset rebeccapurple; width: 420px;">         
+        </div>
+        <script>
+            var div = document.getElementById("userVideosDiv");
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"User-Videos"
+                }
+            }).then(response => response.json())
+            .then(json => {
+                if (json.message == "OK"){
+                    div.innerHTML += '<p style="color:lime">Your videos</p>';
+                    var videoList = json.videos.split(";");
+                    for (i = 0; i < videoList.length; i++){
+                        div.innerHTML += '<p style="color:blue" onclick="DeleteVideo(this)">' + videoList[i] + '</p>';
+                    }
+                    div.innerHTML += '<p style="color:gray">Note: click a video name to delete it</p>';
+                }
+                else if (json.message == "Empty"){
+                    div.innerHTML += '<p style="color:red">No videos uploaded, yet.</p>';
+                }
+            })
+            function DeleteVideo(pTag){
+                fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                    method:'POST',
+                    body: pTag.innerHTML,
+                    credentials:"include",
+                    headers:{
+                        "Option":"Delete-Video"
+                    }
+                }).then(response => response.json())
+                .then(response => {
+                    if (response.message == "OK"){
+                        document.getElementById("status").innerHTML = "Video " + pTag.innerHTML + " deleted.";
+                    }
+                    else{
+                        document.getElementById("status").innerHTML = "Error trying to delete " + pTag.innerHTML;
+                    }
+                })
+            }
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"ProfilePic"
+                }
+            }).then(response => response.blob())
+            .then((response) => {
+                var imageUrl = URL.createObjectURL(response);
+                var imageTag = document.getElementById("profilePic");
+                imageTag.src = imageUrl;
+            }).catch(error => {
+                console.log(error);
+            })
+        </script>
+        <script>
+            function SendFile(){
+                var file = document.getElementById("myFile");
+                if (checkFileExt(file.files[0].name)){
+                    var formData = new FormData();
+                    formData.append("file", file.files[0]);
+
+                    fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                        method:"PUT",
+                        body: formData,
+                        credentials:"include",
+                        headers:{
+                            Option:"Video"
+                        }
+                    }).then(response => response.json())
+                    .then((response) => {
+                        var label = document.getElementById("status");
+                        if (response.message == "OK"){
+                            label.textContent = "Video uploaded.";
+                        }
+                    }).catch((error) => {
+                        var label = document.getElementById("status");
+                        label.textContent = "Error in file upload. " + error;
+                        console.log(error);
+                    })
+                }
+                else{
+                    var label = document.getElementById("status");
+                    label.textContent = "Video format not supported";
+                }
+            }
+            function checkFileExt(FileName){
+                var ext = FileName.split(".")[1];
+                if (ext == "mp4" || ext == "avi" || ext == "webm" || ext == "flv" || ext == "mov" || ext == "wmv"){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet",{
+                method:"GET",
+                credentials:"include"
+            }).then(response => response.json())
+            .then((response) =>{
+                console.log(response);
+                if (response.message == "OK"){
+                    var label = document.getElementById("welcome");
+                    label.textContent = response.username;
+                }
+                else{
+                    window.location.replace("https://guarded-escarpment-77007.herokuapp.com/index.html");
+                }
+            }).catch((error) =>{
+                console.log(error);
+            })
+        </script>
+    </body>
+</html>

@@ -1,31 +1,75 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Asignacion 2 Web-II</title>
     </head>
     <body style="background-color: black;">
-        <p id="welcome" style="color: darksalmon; position: absolute; top: 25%; left: 35%; font-size: x-large;"><strong></strong></p>
+        <p id="welcome" style="color: darksalmon; position: absolute; top: 25%; left: 47%; font-size: x-large;"><strong></strong></p>
+        <button id="logoutButton" style="position: absolute; top: 65%; left: 599px;" onclick="logout()" type="button"><strong>Logout</strong></button>
+        <button id="ChangeButton" style="position: absolute; top: 55%; left: 390px;" onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/profileConfig.html')"><strong>Modify profile</strong></button>
+        <button id="DeleteButton" style="position: absolute; top: 55%; left: 780px;" onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/VideoBrowser.html')"><strong>Browse videos</strong></button>
+        <button id="DeleteButton" style="position: absolute; top: 55%; left: 580px;" onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/UploadVideo.html')"><strong>Upload videos</strong></button>
+        <img id="profilePic" src="" height="100" width="100" style="position: absolute; left: 480px; top: 150px">
+        <script>
+            function logout(){
+                deleteCookies();
+                fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet", {
+                    method:"POST",
+                    body: "logout",
+                    credentials:"include",
+                    headers:{
+                        "Option":"logout"
+                    }
+                }).then(response => response.json())
+                .then((response) => {
+                    if (response.message == "Ok-Redirect"){
+                        window.location.replace("https://guarded-escarpment-77007.herokuapp.com/html/login.html");
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+            function deleteCookies(){
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++){
+                    document.cookie = cookies[0] + "=;expires=" + new Date(0).toUTCString() + ";path=/Asignacion1;";
+                }
+                console.log(document.cookie);
+            }
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"ProfilePic"
+                }
+            }).then(response => response.blob())
+            .then((response) => {
+                var imageUrl = URL.createObjectURL(response);
+                var imageTag = document.getElementById("profilePic");
+                imageTag.src = imageUrl;
+            }).catch(error => {
+                console.log(error);
+            })
+
+            fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet",{
+                method:"GET",
+                credentials:"include"
+            }).then(response => response.json())
+            .then((response) =>{
+                console.log(response);
+                if (response.message == "OK"){
+                    var label = document.getElementById("welcome");
+                    label.textContent = "Welcome " + response.username;
+                }
+                else{
+                   window.location.replace("https://guarded-escarpment-77007.herokuapp.com/index.html");
+                }
+            }).catch((error) =>{
+                console.log(error);
+            })
+        </script>
     </body>
-    <script>
-        fetch("https://morning-oasis-65605.herokuapp.com/SessionServlet",{
-            method:'GET',
-            credentials:'include',
-            headers: {
-                'SameSite':'None'
-            }
-        }).then(response => response.json())
-        .then((response) =>{
-            console.log(response);
-            if (response.message == "OK"){
-                var label = document.getElementById("welcome");
-                label.textContent = "Welcome " + response.username;
-            }
-            else{
-               window.location.href = "https://morning-oasis-65605.herokuapp.com";
-            }
-        }).catch((error) =>{
-            console.log(error);
-        })
-    </script>
 </html>

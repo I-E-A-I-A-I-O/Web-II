@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Asignacion_webII</title>
+    </head>
+    <body style="background-color: gray;">
+        <p id="welcome" style="color: darksalmon; position: absolute; top: 25%; left: 47%; font-size: x-large;"><strong></strong></p>
+        <p id="status" style="color: red; position: absolute; top: 60px; left: 480px; font-size: large;"><strong></strong></p>
+        <button id="ChangeButton" style="position: absolute; top: 55%; left: 450px;" onclick="ToggleChange()"><strong>Change data</strong></button>
+        <button id="DeleteButton" style="position: absolute; top: 55%; left: 780px;" onclick="ToggleDelete()"><strong>Delete profile</strong></button>
+        <form hidden id="ButtonForm" style="position: absolute; top: 65%; left: 450px;">
+            <input id="NameRadio" type="radio" onclick="RadioButtons(this)" style="color: aliceblue;"> <strong style="color: aliceblue;">Change username</strong> <br><br>
+            <input id="passRadio" type="radio" onclick="RadioButtons(this)"> <strong style="color: aliceblue;"> Change password </strong><br><br>
+            <button id="sendChangeButton" type="button" onclick="SaveChanges()">Save changes</button>
+        </form>
+        <form hidden id="newUsernameForm" style="position: absolute; top: 65%; left: 650px;">
+            <input type="text" name="newUsername" placeholder="new username"><br><br>
+            <input id="newUser1" name="Password" type="password" placeholder="Current password"><br><br>
+            <input id="newUser2" type="password" placeholder="Verify password">
+        </form>
+        <form hidden id="newPassForm" style="position: absolute; top: 65%; left: 650px;">
+            <input type="text" name="CurrentUsername" placeholder="Username"><br><br>
+            <input type="password" name="CurrentPassword" placeholder="Current password"><br><br>
+            <input id="newPass1" name="NewPassword" type="password" placeholder="new password"><br><br>
+            <input id="newPass2" type="password" placeholder="Verify password">
+        </form>
+        <form  hidden id="deleteConfirmation" style="position: absolute; top: 65%; left: 780px">
+            <label style="color: yellow;">Are you sure?</label><br>
+            <input id="yesOption" type="radio" onclick="RadioButtons(this)"><strong style="color: red;">Yes</strong><br><br>
+            <input id="NoOption" type="radio" onclick="RadioButtons(this)"><strong style="color: lime;">No</strong><br><br>
+            <button hidden id="doDelete" type="button" onclick="deleteFolder()">Delete</button>
+        </form>
+        <button onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/welcome.html')">Main menu</button>
+        <img id="profilePic" src="" height="100" width="100" style="position: absolute; left: 480px; top: 150px">
+        <form id="fileForm" style="position: absolute; top: 44%; left: 20px;">
+            <label style="color: aliceblue;" for="file">Change profile picture</label>
+            <input id="myFile" name="file" type="file" style="color: lime;"><br><br>
+            <button type="button" onclick="SendFile()">Send image</button>
+        </form>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"ProfilePic"
+                }
+            }).then(response => response.blob())
+            .then((response) => {
+                var imageUrl = URL.createObjectURL(response);
+                var imageTag = document.getElementById("profilePic");
+                imageTag.src = imageUrl;
+            }).catch(error => {
+                console.log(error);
+            })
+        </script>
+        <script>
+            function SendFile(){
+                var file = document.getElementById("myFile");
+                if (checkFileExt(file.files[0].name)){
+                    var formData = new FormData();
+                    formData.append("file", file.files[0]);
+
+                    fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                        method:"PUT",
+                        body: formData,
+                        credentials:"include",
+                        headers:{
+                            Option:"Image"
+                        }
+                    }).then(response => response.json())
+                    .then((response) => {
+                        var label = document.getElementById("status");
+                        if (response.message == "OK"){
+                            label.textContent = "Profile picture updated";
+                            window.location.reload();
+                        }
+                    }).catch((error) => {
+                        var label = document.getElementById("status");
+                        label.textContent = "Error in file upload. " + error;
+                        console.log(error);
+                    })
+                }
+                else{
+                    var label = document.getElementById("status");
+                    label.textContent = "Image format not supported";
+                }
+            }
+            function checkFileExt(FileName){
+                var ext = FileName.split(".")[1];
+                if (ext == "jpeg" || ext == "gif" || ext == "png"){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        </script>
+        <script>
+            function RadioButtons(ButtonPressed){
+                if (ButtonPressed.id == "passRadio"){
+                    var btn = document.getElementById("NameRadio");
+                    var Usform = document.getElementById("newUsernameForm");
+                    Usform.hidden = true;
+                    var Psform = document.getElementById("newPassForm");
+                    Psform.hidden = false;
+                    btn.checked = false;
+                }
+                else if (ButtonPressed.id == "NameRadio"){
+                    var btn = document.getElementById("passRadio");
+                    var Usform = document.getElementById("newUsernameForm");
+                    Usform.hidden = false;
+                    var Psform = document.getElementById("newPassForm");
+                    Psform.hidden = true;
+                    btn.checked = false;
+                }
+                else if (ButtonPressed.id == "yesOption"){
+                    var btn = document.getElementById("NoOption");
+                    var Dbtn = document.getElementById("doDelete");
+                    Dbtn.hidden = false;
+                    btn.checked = false;
+                }
+                else if (ButtonPressed.id == "NoOption"){
+                    var btn = document.getElementById("yesOption");
+                    var Dbtn = document.getElementById("doDelete");
+                    Dbtn.hidden = true;
+                    btn.checked = false;
+                }
+            }
+            function ToggleChange(){
+                var deleteForm = document.getElementById("deleteConfirmation");
+                if (!deleteForm.hidden){
+                    ToggleDelete();
+                }
+                var buttons = document.getElementById("ButtonForm");
+                var PsForm = document.getElementById("newPassForm");
+                var UsForm = document.getElementById("newUsernameForm");
+                buttons.hidden = buttons.hidden ? false : true;
+                if (buttons.hidden){
+                    PsForm.hidden = true;
+                    UsForm.hidden = true;
+                    var Psbtn = document.getElementById("passRadio");
+                    Psbtn.checked = false;
+                    var Usbtn = document.getElementById("NameRadio");
+                    Usbtn.checked = false;
+                }
+            }
+            function ToggleDelete(){
+                var button = document.getElementById("ButtonForm");
+                if (!button.hidden){
+                    ToggleChange();
+                }
+                var deleteForm = document.getElementById("deleteConfirmation");
+                deleteForm.hidden = deleteForm.hidden ? false : true;
+            }
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet",{
+                method:"GET",
+                credentials:"include"
+            }).then(response => response.json())
+            .then((response) =>{
+                console.log(response);
+                if (response.message == "OK"){
+                    var label = document.getElementById("welcome");
+                    label.textContent = "Welcome " + response.username;
+                }
+                else{
+                   window.location.replace("https://guarded-escarpment-77007.herokuapp.com/index.html");
+                }
+            }).catch((error) =>{
+                console.log(error);
+            })
+    
+            function SaveChanges(){
+                var flag = document.getElementById("passRadio");
+                var mode = flag.checked ? "newPass" : "newUser";
+                if (checkPass(mode)){
+                    var form = flag.checked ? document.getElementById("newPassForm") : document.getElementById("newUsernameForm");
+                    var formData = new FormData(form);
+                    fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet", {
+                        method: 'POST',
+                        body: formData,
+                        credentials:"include",
+                        headers:{
+                            "Option": mode
+                        }
+                    }).then(response => response.json())
+                    .then ((response) => {
+                        console.log(response);
+                        if (response.message == "Ok-Pass-Change"){
+                            alert("Changes saved succesfully. For security, you will be logged out.");
+                            logout();
+                        }
+                        else if (response.message == "Ok-Username-Change"){
+                            alert("Changes saved successfully.");
+                            var oldUser = document.getElementById("welcome");
+                            renameFolder(oldUser.textContent.slice("Welcome ".length, oldUser.textContent.length));
+                        }
+                        else if (response.message.includes("Duplicate entry")){
+                            alert("Username already in use.");
+                        }
+                    }).catch((error) => {
+                        console.log(error);
+                    })
+                }
+                else{
+                    alert("Passwords are not the same.");
+                }
+            }
+
+            function renameFolder(oldUsername){
+                fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                    method:"PUT",
+                    credentials:"include",
+                    headers:{
+                        "Option":"Rename-folder",
+                        "Old-User":oldUsername
+                    }
+                }).then(() => {
+                    window.location.reload();
+                })
+            }
+
+            function checkPass(mode){
+                if (mode == "newPass"){
+                    var pass1 = document.getElementById("newPass1");
+                    var pass2 = document.getElementById("newPass2");
+                    if (pass1.value == pass2.value){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
+                else if (mode == "newUser"){
+                    var pass1 = document.getElementById("newUser1");
+                    var pass2 = document.getElementById("newUser2");
+                    if (pass1.value == pass2.value){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
+            }
+        </script>
+        <script>
+            function deleteProfile(){
+                fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet", {
+                    method: 'DELETE',
+                    credentials:"include"
+                }).then(response => response.json())
+                .then((response) => {
+                    if (response.message = "Ok-Delete"){
+                        deleteCookies();
+                        logout();
+                    }
+                    else{
+                        console.log(respose.message);
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+
+            function deleteFolder(){
+                fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                    method: 'PUT',
+                    credentials:"include",
+                    headers:{
+                        "Option":"Delete-folder"
+                    }
+                }).then(() => {
+                    deleteProfile();
+                })
+            }
+        </script>
+        <script>
+            function logout(){
+                deleteCookies();
+                fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet", {
+                    method:"POST",
+                    body: "logout",
+                    credentials:"include",
+                    headers:{
+                        "Option":"logout"
+                    }
+                }).then(response => response.json())
+                .then((response) => {
+                    if (response.message == "Ok-Redirect"){
+                        window.location.replace("https://guarded-escarpment-77007.herokuapp.com/html/login.html");
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+            function deleteCookies(){
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++){
+                    document.cookie = cookies[0] + "=;expires=" + new Date(0).toUTCString() + ";path=/Asignacion1;";
+                }
+                console.log(document.cookie);
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Asignacion_webII</title>
+    </head>
+    <body style="background-color: rgb(34, 34, 34);">
+        <p id="welcome" style="color: darksalmon; position: absolute; top: 20px; left: 1050px; font-size: x-large;"><strong>Username</strong></p>
+        <p id="progress" style="color: dodgerblue; position: absolute; left: 500px; top: 80px;"></p>
+        <form id="searchForm" style="position: absolute; top: 40px; left: 420px;">
+            <input class="form-input" name="videoName" type="text" placeholder="Search a video..." list="VideoOptions">
+            <datalist id="VideoOptions"></datalist>
+            <button type="button" onclick="SearchVideo()">Search</button>
+        </form>
+        <video id="VideoContainer" controls width="1080" height="420" style="position: absolute; top: 150px; left: 100px;"></video>
+        <img id="profilePic" src="" height="100" width="100" style="position: absolute; left:900px; top: 20px">
+        <button onclick="window.location.replace('https://guarded-escarpment-77007.herokuapp.com/html/welcome.html')">Main menu</button>
+        <script>
+            var progressLabel = document.getElementById("progress");
+            var VideoContainer = document.getElementById("VideoContainer");
+            function SearchVideo(){
+                var form = document.getElementById("searchForm");
+                formData = new FormData(form);
+                var array = [];
+                fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                    method: 'POST',
+                    credentials:"include",
+                    body: formData,
+                    headers:{
+                        "Option":"Get-Video",
+                        "Accept-Encoding": "chunked"
+                    }
+                }).then(response => response.blob())
+                .then(videoBlob => {
+                    VideoContainer.src = URL.createObjectURL(videoBlob);
+                })
+            }
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"Video-List"
+                }
+            }).then(response => response.json())
+            .then((response) => {
+                var videosNamesList = response.list.split(";");
+                var datalist = document.getElementById("VideoOptions");
+                var datalistOptions = "";
+                for (i = 0; i < videosNamesList.length - 1; i++){
+                    datalistOptions += '<option value="' + videosNamesList[i].split(":")[0] + " by " + videosNamesList[i].split(":")[1] + '">';
+                }
+                datalist.innerHTML = datalistOptions;
+            }).catch((error) => {
+                console.log(error);
+            })
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/SessionServlet",{
+                method:"GET",
+                credentials:"include"
+            }).then(response => response.json())
+            .then((response) =>{
+                console.log(response);
+                if (response.message == "OK"){
+                    var label = document.getElementById("welcome");
+                    label.textContent = response.username;
+                }
+                else{
+                    window.location.replace("https://guarded-escarpment-77007.herokuapp.com/index.html");
+                }
+            }).catch((error) =>{
+                console.log(error);
+            })
+        </script>
+        <script>
+            fetch("https://guarded-escarpment-77007.herokuapp.com/MediaServlet", {
+                method:'GET',
+                credentials:"include",
+                headers:{
+                    "Option":"ProfilePic"
+                }
+            }).then(response => response.blob())
+            .then((response) => {
+                var imageUrl = URL.createObjectURL(response);
+                var imageTag = document.getElementById("profilePic");
+                imageTag.src = imageUrl;
+            }).catch(error => {
+                console.log(error);
+            })
+        </script>
+    </body>
+</html>

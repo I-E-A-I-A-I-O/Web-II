@@ -11,19 +11,18 @@
             <label class="form-label" for="password" style="color: white;">Password</label>
             <input class="form-input" type="password" name="password" placeholder="Insert your password...">
         </form>
-        <button id="MyButton" style="position: absolute;left: 48%; top: 43%">Register</button>
+        <button id="MyButton" style="position: absolute;left: 780px; top: 43%">Register</button>
         <script>
             var myForm = document.getElementById("MyForm");
             var MyButton = document.getElementById("MyButton");
             function register(formData){
-                fetch("https://morning-oasis-65605.herokuapp.com/RegistrationServlet", {
+                fetch("https://guarded-escarpment-77007.herokuapp.com/RegistrationServlet", {
                     method:'POST',
-                    body:formData,
-                    credentials:'include'
+                    body:formData
                 }).then(response => response.json()).then((response) =>{
                     console.log(response);
                     if (response.message.includes("Success")){
-                        alert("User register succesfull.");
+                        alert("User register succesful.");
                     }
                     else if (response.message.includes("Error")){
                         alert("User already registered.");
