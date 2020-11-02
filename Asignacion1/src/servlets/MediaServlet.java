@@ -32,7 +32,7 @@ public class MediaServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+		response.setHeader("Access-Control-Allow-Origin", "https://guarded-escarpment-77007.herokuapp.com");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Option");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST");
@@ -84,7 +84,7 @@ public class MediaServlet extends HttpServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+		response.setHeader("Access-Control-Allow-Origin", "https://guarded-escarpment-77007.herokuapp.com");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Option");
 		response.setHeader("Access-Control-Expose-Headers", "Content-Length");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
@@ -124,7 +124,7 @@ public class MediaServlet extends HttpServlet {
 	
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+		response.setHeader("Access-Control-Allow-Origin", "https://guarded-escarpment-77007.herokuapp.com");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Option, Old-User");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST");
